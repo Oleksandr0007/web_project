@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: mongo:4.2
+    restart: always
+    environment:
+     - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+     - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./mongod.conf:/etc/mongo/mongod.conf
+      -  mongodata:/data/db
+    ports:
+      - "27017:27017"
+      
+
+  back-end:
+    image: bodya1601/todo:latest
+    restart: always
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - mongo
+    ports:
+      - "4000:4000"
+    working_dir: /app/
+    entrypoint: npm start
+
+  front-end:
+    image: bodya1601/todo-front:latest
+    restart: always
+    environment:
+      - TZ=UTC
+      - REACT_APP_HOST=${REACT_APP_HOST}
+    ports:
+      - "80:80"
+    depends_on:
+      - back-end
+
+volumes:
+  mongodata:

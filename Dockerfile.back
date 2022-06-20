@@ -1,0 +1,8 @@
+FROM node:16
+RUN mkdir /app
+WORKDIR /app/
+COPY ./server/ .
+RUN apt-get update
+RUN apt install nodejs npm -y
+RUN npm install
+RUN npm run build
